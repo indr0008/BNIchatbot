@@ -4,6 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web App Chatbot</title>
+    <style>
+        /* Basic styles for the layout */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        video {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        img {
+            margin-top: 20px;
+            width: 100px; /* Adjust avatar size as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+        #genderDisplay {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome to the Web App</h1>
@@ -13,6 +41,9 @@
     
     <!-- Avatar image that will change based on detected gender -->
     <img id="avatar" src="./images/customer_service_logo.png" alt="Avatar">
+
+    <!-- Placeholder for gender detection output -->
+    <div id="genderDisplay">Detected Gender: </div> <!-- Display for detected gender -->
 
     <!-- Placeholder for chatbot (commented out) -->
     <!-- <div id="chatbot">Hello, how can I help you?</div> -->
