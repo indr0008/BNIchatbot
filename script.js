@@ -1,4 +1,3 @@
-// Wrap your code in DOMContentLoaded to ensure face-api.js is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     // Access the webcam
     const video = document.getElementById('webcam');
