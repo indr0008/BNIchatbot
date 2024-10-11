@@ -25,9 +25,9 @@ function setAvatar(gender) {
     const avatar = document.getElementById('avatar');
     
     if (gender === 'male') {
-        avatar.src = './images/female_avatar.png';  // Path to female avatar image
+        avatar.src = './images/female_avatar.jpeg';  // Path to female avatar image
     } else if (gender === 'female') {
-        avatar.src = './images/male_avatar.png';    // Path to male avatar image
+        avatar.src = './images/male_avatar.jpeg';    // Path to male avatar image
     }
 }
 
