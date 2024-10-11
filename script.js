@@ -3,8 +3,22 @@ const video = document.getElementById('webcam');
 const toggleButton = document.getElementById('toggleButton');
 let stream; // To hold the media stream
 
-toggleButton.addEventListener('click', () => {
+// Load the face-api.js model and initiate gender detection
+async function loadModels() {
+    try {
+        await faceapi.nets.ssdMobilenetv1.loadFromUri('./models'); 
+        await faceapi.nets.faceLandmark68Net.loadFromUri('./models');
+        await faceapi.nets.ageGenderNet.loadFromUri('./models');
+        console.log('Models loaded successfully');
+    } catch (err) {
+        console.error('Error loading models: ', err);
+    }
+}
+
+// Event listener for the toggle button
+toggleButton.addEventListener('click', async () => {
     if (toggleButton.textContent === 'Turn On Webcam') {
+        await loadModels(); // Load models when turning on the webcam
         startWebcam();
     } else {
         stopWebcam();
@@ -12,16 +26,15 @@ toggleButton.addEventListener('click', () => {
 });
 
 // Function to start the webcam
-function startWebcam() {
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then((mediaStream) => {
-            stream = mediaStream;
-            video.srcObject = stream;
-            toggleButton.textContent = 'Turn Off Webcam'; // Update button text
-        })
-        .catch((err) => {
-            console.error('Error accessing webcam: ', err);
-        });
+async function startWebcam() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        toggleButton.textContent = 'Turn Off Webcam'; // Update button text
+        detectGender(); // Start gender detection
+    } catch (err) {
+        console.error('Error accessing webcam: ', err);
+    }
 }
 
 // Function to stop the webcam
@@ -31,25 +44,21 @@ function stopWebcam() {
         tracks.forEach(track => track.stop()); // Stop each track
         video.srcObject = null; // Clear the video source
         toggleButton.textContent = 'Turn On Webcam'; // Update button text
+        document.getElementById('genderDisplay').innerText = 'Detected Gender: '; // Clear gender display
     }
 }
 
-// Load the face-api.js model and detect gender
+// Continuous gender detection
 async function detectGender() {
-    // Load the necessary models from face-api.js
-    await faceapi.nets.ssdMobilenetv1.loadFromUri('./models'); // Adjust path for GitHub Pages
-    await faceapi.nets.faceLandmark68Net.loadFromUri('./models');
-    await faceapi.nets.ageGenderNet.loadFromUri('./models');
-
-    // Detect the face and gender from the video stream
-    const detection = await faceapi.detectSingleFace(video).withAgeAndGender();
-    
-    if (detection) {
-        const gender = detection.gender;
-        console.log(`Detected gender: ${gender}`); // Log the detected gender
-        setAvatar(gender); // Update avatar based on gender
-        document.getElementById('genderDisplay').innerText = `Detected Gender: ${gender}`; // Display gender on webpage
-    }
+    setInterval(async () => {
+        const detection = await faceapi.detectSingleFace(video).withAgeAndGender();
+        if (detection) {
+            const gender = detection.gender;
+            console.log(`Detected gender: ${gender}`); // Log the detected gender
+            setAvatar(gender); // Update avatar based on gender
+            document.getElementById('genderDisplay').innerText = `Detected Gender: ${gender}`; // Display gender on webpage
+        }
+    }, 1000); // Check every second
 }
 
 // Update the avatar based on gender
@@ -62,6 +71,3 @@ function setAvatar(gender) {
         avatar.src = './images/male_avatar.jpeg';    // Path to male avatar image
     }
 }
-
-// Trigger gender detection when the video stream is ready
-video.addEventListener('loadeddata', detectGender);
